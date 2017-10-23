@@ -11,7 +11,7 @@ class SearchBar extends React.Component {
     this.setState({
       searchTerm
     });
-    //Set a callback using props to call method in index.js
+    this.props.onSearch(searchTerm);
   };
   render() {
     return (
