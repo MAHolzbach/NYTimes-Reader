@@ -38,7 +38,9 @@ class App extends React.Component {
     });
     fetch(request)
       .then(response => response.json())
-      .then(data => console.log(data.results[4]));
+      .then(data => {
+        this.setState({ articleList: data.results });
+      }, console.log(this.state.articleList));
   }
 
   render() {
@@ -46,7 +48,7 @@ class App extends React.Component {
       <div className="container">
         <SearchBar onSearch={this.onSearch} />
         {this.state.articleList.map(article => (
-          <Article thumbnail={article.thumbnail} headline={article.headline} />
+          <Article abstract={article.abstract} title={article.title} />
         ))}
       </div>
     );
