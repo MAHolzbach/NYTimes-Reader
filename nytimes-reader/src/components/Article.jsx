@@ -2,9 +2,9 @@ import React from "react";
 
 const Article = props => (
   <div className="row">
-    <div className="col-md-3">{props.thumbnail}</div>
-    <div className="col-md-7">{props.headline}</div>
-    <div className="col-md-2">
+    <div className="col-md-4">{props.title}</div>
+    <div className="col-md-7">{props.abstract}</div>
+    <div className="col-md-1">
       <input type="checkbox" />
     </div>
   </div>
