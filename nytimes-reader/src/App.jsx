@@ -2,14 +2,31 @@ import React from "react";
 import Article from "./components/Article";
 import SearchBar from "./components/SearchBar";
 
-const isSearched = searchTerm => item =>
-  !searchTerm || item.abstract.toLowerCase().includes(searchTerm.toLowerCase());
+const isFiltered = term => item =>
+  !term || item.abstract.toLowerCase().includes(term.toLowerCase());
+
+const articleSearch = searchTerm => {
+  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  const url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+  const request = new Request(proxyurl + url, {
+    headers: new Headers({
+      "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce",
+      "?": searchTerm
+    })
+  });
+  fetch(request)
+    .then(response => response.json())
+    .then(data => {
+      this.setState({ articleList: data.results });
+    });
+};
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       searchTerm: "",
+      filter: "",
       articleList: [
         {
           thumbnail: "imagefile1",
@@ -27,8 +44,16 @@ class App extends React.Component {
     };
   }
 
-  onSearch = searchTerm => {
+  onSearchChange = searchTerm => {
     this.setState({ searchTerm: searchTerm });
+  };
+
+  onFilter = term => {
+    this.setState({ filter: term });
+  };
+
+  onSearch = searchTerm => {
+    articleSearch(searchTerm);
   };
 
   componentDidMount() {
@@ -49,9 +74,13 @@ class App extends React.Component {
   render() {
     return (
       <div className="container">
-        <SearchBar onSearch={this.onSearch} />
+        <SearchBar
+          onSearch={this.onSearch}
+          onFilter={this.onFilter}
+          onSearchChange={this.onSearchChange}
+        />
         {this.state.articleList
-          .filter(isSearched(this.state.searchTerm))
+          .filter(isFiltered(this.state.filter))
           .map(article => (
             <Article
               abstract={article.abstract}
