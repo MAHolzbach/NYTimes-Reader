@@ -2,6 +2,9 @@ import React from "react";
 import Article from "./components/Article";
 import SearchBar from "./components/SearchBar";
 
+const isSearched = searchTerm => item =>
+  !searchTerm || item.abstract.toLowerCase().includes(searchTerm.toLowerCase());
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -24,8 +27,8 @@ class App extends React.Component {
     };
   }
 
-  onSearch = term => {
-    this.setState({ searchTerm: term });
+  onSearch = searchTerm => {
+    this.setState({ searchTerm: searchTerm });
   };
 
   componentDidMount() {
@@ -40,16 +43,22 @@ class App extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.setState({ articleList: data.results });
-      }, console.log(this.state.articleList));
+      });
   }
 
   render() {
     return (
       <div className="container">
         <SearchBar onSearch={this.onSearch} />
-        {this.state.articleList.map(article => (
-          <Article abstract={article.abstract} title={article.title} />
-        ))}
+        {this.state.articleList
+          .filter(isSearched(this.state.searchTerm))
+          .map(article => (
+            <Article
+              abstract={article.abstract}
+              title={article.title}
+              number={this.state.articleList.indexOf(article)}
+            />
+          ))}
       </div>
     );
   }
