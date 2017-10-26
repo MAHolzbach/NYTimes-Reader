@@ -5,13 +5,14 @@ import SearchBar from "./components/SearchBar";
 const isFiltered = term => item =>
   !term || item.abstract.toLowerCase().includes(term.toLowerCase());
 
+//BUG: 'q' key in request object should be in quotes. Why is Prettier stripping those quotes out?
 const articleSearch = searchTerm => {
   const proxyurl = "https://cors-anywhere.herokuapp.com/";
   const url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-  const request = new Request(proxyurl + url, {
+  const request = new Request(proxyurl + url + "?", {
     headers: new Headers({
       "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce",
-      "?": searchTerm
+      q: searchTerm
     })
   });
   fetch(request)
