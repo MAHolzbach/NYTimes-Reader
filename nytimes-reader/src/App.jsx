@@ -1,26 +1,13 @@
 import React from "react";
 import Article from "./components/Article";
 import SearchBar from "./components/SearchBar";
+import SearchResult from "./components/SearchResult";
 
-const isFiltered = term => item =>
+const topFiltered = term => item =>
   !term || item.abstract.toLowerCase().includes(term.toLowerCase());
 
-//BUG: 'q' key in request object should be in quotes. Why is Prettier stripping those quotes out?
-const articleSearch = searchTerm => {
-  const proxyurl = "https://cors-anywhere.herokuapp.com/";
-  const url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-  const request = new Request(proxyurl + url + "?", {
-    headers: new Headers({
-      "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce",
-      q: searchTerm
-    })
-  });
-  fetch(request)
-    .then(response => response.json())
-    .then(data => {
-      this.setState({ articleList: data.results });
-    });
-};
+const searchFiltered = term => item =>
+  !term || item.snippet.toLowerCase().includes(term.toLowerCase());
 
 class App extends React.Component {
   constructor(props) {
@@ -28,20 +15,8 @@ class App extends React.Component {
     this.state = {
       searchTerm: "",
       filter: "",
-      articleList: [
-        {
-          thumbnail: "imagefile1",
-          headline: "If it bleeds it leads!"
-        },
-        {
-          thumbnail: "imagefile2",
-          headline: "Rabble rabble rabble!!"
-        },
-        {
-          thumbnail: "imagefile3",
-          headline: "Celebrity nonsense..."
-        }
-      ]
+      articleList: [],
+      searchResult: []
     };
   }
 
@@ -53,18 +28,14 @@ class App extends React.Component {
     this.setState({ filter: term });
   };
 
-  onSearch = searchTerm => {
-    articleSearch(searchTerm);
-  };
-
   componentDidMount() {
-    const proxyurl = "https://cors-anywhere.herokuapp.com/";
-    const url = "https://api.nytimes.com/svc/topstories/v2/home.json";
-    const request = new Request(proxyurl + url, {
-      headers: new Headers({
-        "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce"
-      })
+    const url =
+      "https://cors-anywhere.herokuapp.com/https://api.nytimes.com/svc/topstories/v2/home.json";
+    const myHeaders = new Headers({
+      "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce"
     });
+    const myParams = { method: "GET", headers: myHeaders, mode: "cors" };
+    const request = new Request(url, myParams);
     fetch(request)
       .then(response => response.json())
       .then(data => {
@@ -72,23 +43,52 @@ class App extends React.Component {
       });
   }
 
+  articleSearch = searchTerm => {
+    const url =
+      "https://cors-anywhere.herokuapp.com/https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" +
+      searchTerm;
+    const myHeaders = new Headers({
+      "api-key": "00f6cfa8c6df43179ebcbf4ad38a7cce"
+    });
+    const myParams = {
+      method: "GET",
+      headers: myHeaders,
+      mode: "cors"
+    };
+    const request = new Request(url, myParams);
+    fetch(request)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ searchResult: data.response.docs });
+      });
+  };
+  // TODO: Set up conditional rendering. Want top stories on page load, then replace those with SearchResult upon search.
   render() {
     return (
       <div className="container">
         <SearchBar
-          onSearch={this.onSearch}
+          onSearch={this.articleSearch}
           onFilter={this.onFilter}
           onSearchChange={this.onSearchChange}
         />
-        {this.state.articleList
-          .filter(isFiltered(this.state.filter))
+        {this.state.searchResult
+          .filter(searchFiltered(this.state.filter))
+          .map(article => (
+            <SearchResult
+              title={article.headline.main}
+              extract={article.snippet}
+            />
+          ))}
+
+        {/* {this.state.articleList
+          .filter(topFiltered(this.state.filter))
           .map(article => (
             <Article
               abstract={article.abstract}
               title={article.title}
               number={this.state.articleList.indexOf(article)}
             />
-          ))}
+          ))} */}
       </div>
     );
   }

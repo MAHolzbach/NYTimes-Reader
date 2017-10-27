@@ -13,8 +13,10 @@ class SearchBar extends React.Component {
     });
     this.props.onSearchChange(searchTerm);
   };
-  onSearch = () => {
-    this.props.onSearch(this.state.searchTerm);
+  onSearch = event => {
+    event.preventDefault();
+    const { searchTerm } = this.state;
+    this.props.onSearch(searchTerm);
   };
   onFilter = term => {
     this.props.onFilter(term);
@@ -23,18 +25,19 @@ class SearchBar extends React.Component {
     return (
       <div className="row">
         <p>Filter results:</p>
-        <input
-          type="text"
-          placeholder="Filter..."
-          onChange={event => this.onFilter(event.target.value)}
-        />
-        <p>Search NY Times database:</p>
         <form>
+          <input
+            type="text"
+            placeholder="Filter..."
+            onChange={event => this.onFilter(event.target.value)}
+          />
+        </form>
+        <p>Search NY Times database:</p>
+        <form onSubmit={this.onSearch}>
           <input
             type="text"
             placeholder="Search..."
             onChange={event => this.onSearchChange(event.target.value)}
-            onSubmit={this.onSearch}
           />
         </form>
       </div>
