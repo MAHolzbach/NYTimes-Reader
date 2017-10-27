@@ -62,7 +62,6 @@ class App extends React.Component {
         this.setState({ searchResult: data.response.docs });
       });
   };
-  // TODO: Set up conditional rendering. Want top stories on page load, then replace those with SearchResult upon search.
   render() {
     return (
       <div className="container">
@@ -71,6 +70,16 @@ class App extends React.Component {
           onFilter={this.onFilter}
           onSearchChange={this.onSearchChange}
         />
+        {this.state.searchResult.length === 0 &&
+          this.state.articleList
+            .filter(topFiltered(this.state.filter))
+            .map(article => (
+              <Article
+                abstract={article.abstract}
+                title={article.title}
+                number={this.state.articleList.indexOf(article)}
+              />
+            ))}
         {this.state.searchResult
           .filter(searchFiltered(this.state.filter))
           .map(article => (
@@ -79,16 +88,6 @@ class App extends React.Component {
               extract={article.snippet}
             />
           ))}
-
-        {/* {this.state.articleList
-          .filter(topFiltered(this.state.filter))
-          .map(article => (
-            <Article
-              abstract={article.abstract}
-              title={article.title}
-              number={this.state.articleList.indexOf(article)}
-            />
-          ))} */}
       </div>
     );
   }
