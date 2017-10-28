@@ -2,6 +2,7 @@ import React from "react";
 import Article from "./components/Article";
 import SearchBar from "./components/SearchBar";
 import SearchResult from "./components/SearchResult";
+import Header from "./components/Header";
 
 const topFiltered = term => item =>
   !term || item.abstract.toLowerCase().includes(term.toLowerCase());
@@ -10,8 +11,8 @@ const searchFiltered = term => item =>
   !term || item.snippet.toLowerCase().includes(term.toLowerCase());
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
       searchTerm: "",
       filter: "",
@@ -64,30 +65,40 @@ class App extends React.Component {
   };
   render() {
     return (
-      <div className="container">
-        <SearchBar
-          onSearch={this.articleSearch}
-          onFilter={this.onFilter}
-          onSearchChange={this.onSearchChange}
-        />
-        {this.state.searchResult.length === 0 &&
-          this.state.articleList
-            .filter(topFiltered(this.state.filter))
+      <div>
+        <Header />
+        <div className="container">
+          <SearchBar
+            onSearch={this.articleSearch}
+            onFilter={this.onFilter}
+            onSearchChange={this.onSearchChange}
+          />
+          {this.state.searchResult.length === 0 ? (
+            <h1>Our top stories:</h1>
+          ) : (
+            <h1>Search results:</h1>
+          )}
+          {this.state.searchResult.length === 0 &&
+            this.state.articleList
+              .filter(topFiltered(this.state.filter))
+              .map(article => (
+                <Article
+                  abstract={article.abstract}
+                  title={article.title}
+                  link={article.url}
+                  number={this.state.articleList.indexOf(article)}
+                />
+              ))}
+          {this.state.searchResult
+            .filter(searchFiltered(this.state.filter))
             .map(article => (
-              <Article
-                abstract={article.abstract}
-                title={article.title}
-                number={this.state.articleList.indexOf(article)}
+              <SearchResult
+                title={article.headline.main}
+                extract={article.snippet}
+                link={article.web_url}
               />
             ))}
-        {this.state.searchResult
-          .filter(searchFiltered(this.state.filter))
-          .map(article => (
-            <SearchResult
-              title={article.headline.main}
-              extract={article.snippet}
-            />
-          ))}
+        </div>
       </div>
     );
   }

@@ -23,21 +23,23 @@ class SearchBar extends React.Component {
   };
   render() {
     return (
-      <div className="row">
+      <div className="row justify-content-center">
+        <p>Search NY Times database:</p>
+        <form onSubmit={this.onSearch}>
+          <input
+            className="mr-5"
+            type="text"
+            placeholder="Search..."
+            onChange={event => this.onSearchChange(event.target.value)}
+          />
+        </form>
+
         <p>Filter results:</p>
         <form>
           <input
             type="text"
             placeholder="Filter..."
             onChange={event => this.onFilter(event.target.value)}
-          />
-        </form>
-        <p>Search NY Times database:</p>
-        <form onSubmit={this.onSearch}>
-          <input
-            type="text"
-            placeholder="Search..."
-            onChange={event => this.onSearchChange(event.target.value)}
           />
         </form>
       </div>

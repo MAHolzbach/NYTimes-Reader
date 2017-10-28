@@ -1,12 +1,11 @@
 import React from "react";
 
 const SearchResult = props => (
-  <div className="row">
-    <div className="col-md-1" />
-    <div className="col-md-3">{props.title}</div>
-    <div className="col-md-6">{props.extract}</div>
-    <div className="col-md-1">
-      <input type="checkbox" />
+  <div className="card mb-3">
+    <div className="card-body">
+      <h4 className="card-title">{props.title}</h4>
+      <p>{props.extract}</p>
+      <a href={props.link}>Read the full story.</a>
     </div>
   </div>
 );
