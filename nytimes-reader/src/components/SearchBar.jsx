@@ -27,14 +27,20 @@ class SearchBar extends React.Component {
         <p>Search NY Times database:</p>
         <form onSubmit={this.onSearch}>
           <input
-            className="mr-5"
             type="text"
             placeholder="Search..."
             onChange={event => this.onSearchChange(event.target.value)}
           />
+          <button
+            className="btn btn-sm btn-outline-primary ml-2"
+            type="button"
+            onClick={this.onSearch}
+          >
+            Search
+          </button>
         </form>
 
-        <p>Filter results:</p>
+        <p className="ml-4">Filter results:</p>
         <form>
           <input
             type="text"
