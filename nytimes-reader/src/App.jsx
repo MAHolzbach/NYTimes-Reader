@@ -3,6 +3,9 @@ import Article from "./components/Article";
 import SearchBar from "./components/SearchBar";
 import SearchResult from "./components/SearchResult";
 import Header from "./components/Header";
+import SectionFilter from "./components/SectionFilter";
+
+//TODO: Build function to create array of sections. Add to state. forEach it to render ONE section button for each section, rather than one for each article. Object map? forin loop?
 
 const topFiltered = term => item =>
   !term || item.abstract.toLowerCase().includes(term.toLowerCase());
@@ -17,7 +20,8 @@ class App extends React.Component {
       searchTerm: "",
       filter: "",
       articleList: [],
-      searchResult: []
+      searchResult: [],
+      sectionArray: []
     };
   }
 
@@ -29,7 +33,7 @@ class App extends React.Component {
     this.setState({ filter: term });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const url =
       "https://cors-anywhere.herokuapp.com/https://api.nytimes.com/svc/topstories/v2/home.json";
     const myHeaders = new Headers({
@@ -37,11 +41,12 @@ class App extends React.Component {
     });
     const myParams = { method: "GET", headers: myHeaders, mode: "cors" };
     const request = new Request(url, myParams);
-    fetch(request)
+    await fetch(request)
       .then(response => response.json())
       .then(data => {
         this.setState({ articleList: data.results });
       });
+    this.sectionArrayBuilder(this.state.articleList);
   }
 
   articleSearch = searchTerm => {
@@ -63,10 +68,25 @@ class App extends React.Component {
         this.setState({ searchResult: data.response.docs });
       });
   };
+
+  sectionArrayBuilder = arr => {
+    //Iterate over data results object and pull out section attribute
+    const sectionArray = [];
+    arr.forEach(article => {
+      sectionArray.push(article.section);
+    });
+    //Add that to a part of state
+    this.setState({ sectionArray });
+  };
+
   render() {
     return (
       <div>
         <Header />
+        {this.state.searchResult.length === 0 &&
+          this.state.articleList
+            .filter(topFiltered(this.state.filter))
+            .map(article => <SectionFilter section={article.section} />)}
         <div className="container">
           <SearchBar
             onSearch={this.articleSearch}
