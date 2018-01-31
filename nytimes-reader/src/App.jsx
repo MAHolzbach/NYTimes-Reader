@@ -5,7 +5,8 @@ import SearchResult from "./components/SearchResult";
 import Header from "./components/Header";
 import SectionFilter from "./components/SectionFilter";
 
-//TODO: Build function to create array of sections. Add to state. forEach it to render ONE section button for each section, rather than one for each article. Object map? forin loop?
+//TODO: Filter story list on section button click.
+//TODO: Add section list for search results list of articles.
 
 const topFiltered = term => item =>
   !term || item.abstract.toLowerCase().includes(term.toLowerCase());
@@ -70,12 +71,12 @@ class App extends React.Component {
   };
 
   sectionArrayBuilder = arr => {
-    //Iterate over data results object and pull out section attribute
     const sectionArray = [];
     arr.forEach(article => {
-      sectionArray.push(article.section);
+      if (sectionArray.indexOf(article.section) === -1) {
+        sectionArray.push(article.section);
+      }
     });
-    //Add that to a part of state
     this.setState({ sectionArray });
   };
 
@@ -83,10 +84,14 @@ class App extends React.Component {
     return (
       <div>
         <Header />
-        {this.state.searchResult.length === 0 &&
-          this.state.articleList
-            .filter(topFiltered(this.state.filter))
-            .map(article => <SectionFilter section={article.section} />)}
+        <div className="container-fluid">
+          <div className="btn-group">
+            {this.state.searchResult.length === 0 &&
+              this.state.sectionArray.map(section => (
+                <SectionFilter section={section} />
+              ))}
+          </div>
+        </div>
         <div className="container">
           <SearchBar
             onSearch={this.articleSearch}
