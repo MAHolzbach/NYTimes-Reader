@@ -50,7 +50,7 @@ class App extends React.Component {
     this.sectionArrayBuilder(this.state.articleList);
   }
 
-  articleSearch = searchTerm => {
+  articleSearch = async searchTerm => {
     const url =
       "https://cors-anywhere.herokuapp.com/https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" +
       searchTerm;
@@ -63,11 +63,12 @@ class App extends React.Component {
       mode: "cors"
     };
     const request = new Request(url, myParams);
-    fetch(request)
+    await fetch(request)
       .then(response => response.json())
       .then(data => {
         this.setState({ searchResult: data.response.docs });
       });
+    this.sectionArrayBuilder(this.state.searchResult);
   };
 
   sectionArrayBuilder = arr => {
@@ -82,47 +83,48 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <Header />
-        <div className="container-fluid">
-          <div className="btn-group">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-12">
+            <Header />
+            <SearchBar
+              onSearch={this.articleSearch}
+              onFilter={this.onFilter}
+              onSearchChange={this.onSearchChange}
+            />
+            <div className="btn-group justify-content-center section-bar">
+              {this.state.searchResult.length === 0 &&
+                this.state.sectionArray.map(section => (
+                  <SectionFilter section={section} />
+                ))}
+            </div>
+
+            {this.state.searchResult.length === 0 ? (
+              <h1>Our top stories:</h1>
+            ) : (
+              <h1>Search results:</h1>
+            )}
             {this.state.searchResult.length === 0 &&
-              this.state.sectionArray.map(section => (
-                <SectionFilter section={section} />
-              ))}
-          </div>
-        </div>
-        <div className="container">
-          <SearchBar
-            onSearch={this.articleSearch}
-            onFilter={this.onFilter}
-            onSearchChange={this.onSearchChange}
-          />
-          {this.state.searchResult.length === 0 ? (
-            <h1>Our top stories:</h1>
-          ) : (
-            <h1>Search results:</h1>
-          )}
-          {this.state.searchResult.length === 0 &&
-            this.state.articleList
-              .filter(topFiltered(this.state.filter))
+              this.state.articleList
+                .filter(topFiltered(this.state.filter))
+                .map(article => (
+                  <Article
+                    abstract={article.abstract}
+                    title={article.title}
+                    link={article.url}
+                    number={this.state.articleList.indexOf(article)}
+                  />
+                ))}
+            {this.state.searchResult
+              .filter(searchFiltered(this.state.filter))
               .map(article => (
-                <Article
-                  abstract={article.abstract}
-                  title={article.title}
-                  link={article.url}
-                  number={this.state.articleList.indexOf(article)}
+                <SearchResult
+                  title={article.headline.main}
+                  extract={article.snippet}
+                  link={article.web_url}
                 />
               ))}
-          {this.state.searchResult
-            .filter(searchFiltered(this.state.filter))
-            .map(article => (
-              <SearchResult
-                title={article.headline.main}
-                extract={article.snippet}
-                link={article.web_url}
-              />
-            ))}
+          </div>
         </div>
       </div>
     );
