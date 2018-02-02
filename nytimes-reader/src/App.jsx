@@ -83,7 +83,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="container-fluid">
+      <div className="container">
         <div className="row">
           <div className="col-12">
             <Header />
@@ -92,17 +92,14 @@ class App extends React.Component {
               onFilter={this.onFilter}
               onSearchChange={this.onSearchChange}
             />
-            <div className="btn-group justify-content-center section-bar">
-              {this.state.searchResult.length === 0 &&
-                this.state.sectionArray.map(section => (
-                  <SectionFilter section={section} />
-                ))}
-            </div>
-
+            <SectionFilter
+              searchResult={this.state.searchResult}
+              sectionArray={this.state.sectionArray}
+            />
             {this.state.searchResult.length === 0 ? (
-              <h1>Our top stories:</h1>
+              <h2>Our current top stories:</h2>
             ) : (
-              <h1>Search results:</h1>
+              <h2>Search results:</h2>
             )}
             {this.state.searchResult.length === 0 &&
               this.state.articleList

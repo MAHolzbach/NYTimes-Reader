@@ -24,29 +24,38 @@ class SearchBar extends React.Component {
   render() {
     return (
       <div className="row justify-content-center">
-        <p>Search NY Times database:</p>
         <form onSubmit={this.onSearch}>
-          <input
-            type="text"
-            placeholder="Search..."
-            onChange={event => this.onSearchChange(event.target.value)}
-          />
-          <button
-            className="btn btn-sm btn-outline-primary ml-2"
-            type="button"
-            onClick={this.onSearch}
-          >
-            Search
-          </button>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text">
+                Search NY Times database:
+              </label>
+            </div>
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Search..."
+              onChange={event => this.onSearchChange(event.target.value)}
+            />
+            <div className="input-group-append">
+              <button className="btn btn-outline-primary" type="button">
+                Search
+              </button>
+            </div>
+          </div>
         </form>
-
-        <p className="ml-4">Filter results:</p>
         <form>
-          <input
-            type="text"
-            placeholder="Filter..."
-            onChange={event => this.onFilter(event.target.value)}
-          />
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <label className="input-group-text">Filter articles:</label>
+            </div>
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Filter..."
+              onChange={event => this.onFilter(event.target.value)}
+            />
+          </div>
         </form>
       </div>
     );
