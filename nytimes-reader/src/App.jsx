@@ -5,11 +5,13 @@ import SearchResult from "./components/SearchResult";
 import Header from "./components/Header";
 import SectionFilter from "./components/SectionFilter";
 
-//TODO: Filter story list on section button click.
 //TODO: Add section list for search results list of articles.
+//TODO: Add some kind of "loading" spinner for better UX.
 
 const topFiltered = term => item =>
-  !term || item.abstract.toLowerCase().includes(term.toLowerCase());
+  !term ||
+  item.abstract.toLowerCase().includes(term.toLowerCase()) ||
+  item.section.toLowerCase().includes(term.toLowerCase());
 
 const searchFiltered = term => item =>
   !term || item.snippet.toLowerCase().includes(term.toLowerCase());
@@ -22,7 +24,8 @@ class App extends React.Component {
       filter: "",
       articleList: [],
       searchResult: [],
-      sectionArray: []
+      sectionArray: [],
+      maxSectionArrayLength: 15
     };
   }
 
@@ -95,6 +98,8 @@ class App extends React.Component {
             <SectionFilter
               searchResult={this.state.searchResult}
               sectionArray={this.state.sectionArray}
+              maxSectionArrayLength={this.state.maxSectionArrayLength}
+              onFilter={this.onFilter}
             />
             {this.state.searchResult.length === 0 ? (
               <h2>Our current top stories:</h2>
